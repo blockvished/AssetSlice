@@ -34,12 +34,6 @@ export default function Navbar() {
         >
           Fractionalize
         </Link>
-        <Link
-          href="/about"
-          className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200"
-        >
-          About
-        </Link>
       </div>
 
       {/* Right side: Connect Button */}
