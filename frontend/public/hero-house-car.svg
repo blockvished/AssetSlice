@@ -1,0 +1,11 @@
+<svg width="320" height="180" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- House -->
+  <rect x="30" y="80" width="80" height="60" rx="10" fill="#A7F3D0" stroke="#059669" stroke-width="4"/>
+  <polygon points="30,80 70,40 110,80" fill="#6EE7B7" stroke="#059669" stroke-width="4"/>
+  <rect x="60" y="110" width="20" height="30" rx="4" fill="#FDE68A" stroke="#B45309" stroke-width="2"/>
+  <!-- Car -->
+  <rect x="170" y="110" width="80" height="30" rx="10" fill="#93C5FD" stroke="#2563EB" stroke-width="4"/>
+  <rect x="185" y="100" width="50" height="20" rx="6" fill="#BFDBFE" stroke="#2563EB" stroke-width="2"/>
+  <circle cx="190" cy="140" r="10" fill="#F9FAFB" stroke="#2563EB" stroke-width="3"/>
+  <circle cx="240" cy="140" r="10" fill="#F9FAFB" stroke="#2563EB" stroke-width="3"/>
+</svg>
