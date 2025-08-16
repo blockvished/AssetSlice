@@ -37,7 +37,7 @@ contract Fractionalizer is ERC20, Ownable {
         _mint(msg.sender, shareCount * 1e18);
     }
 
-        function unfractionalize(address to) external {
+    function unfractionalize(address to) external {
         require(isLocked, "No NFT locked");
         require(balanceOf(msg.sender) == totalSupply(), "Must own all shares");
 
