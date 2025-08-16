@@ -1,19 +1,24 @@
-import { writeContract } from '@wagmi/core';
+import {
+  deployContract,
+  waitForTransactionReceipt,
+  readContract,
+  writeContract
+} from "@wagmi/core";
 import Fractionalizer from './abi/Fractionalizer.json';
-import { config } from '../wagmi'; // your wagmi config file
+import { config } from '../../wagmi'; // your wagmi config file
 
 /**
  * Deploy Fractionalizer contract
  * @param nftAddress address of ERC721 contract
  * @returns transaction hash
  */
-export async function deployFractionalizer(nftAddress) {
+export async function deployFractionalizer(nftAddress, name, symbol) {
   if (!nftAddress) throw new Error("NFT address required");
 
-  const hash = await writeContract(config, {
+  const hash = await deployContract(config, {
     abi: Fractionalizer.abi,
-    bytecode: Fractionalizer.bytecode,
-    args: [nftAddress], // constructor param
+    bytecode: Fractionalizer.bytecode.object,
+    args: [nftAddress, name, symbol], // constructor param
   });
 
   const receipt = await waitForTransactionReceipt(config, { hash });
@@ -36,7 +41,8 @@ export async function fractionalize(contractAddress, tokenId) {
 }
 
 /* Get contract state (isLocked, lockedTokenId, etc.) */
-export async function getFractionalizerState(contractAddress){([
+export async function getFractionalizerState(contractAddress) {
+  ([
     readContract(config, {
       address: contractAddress,
       abi: Fractionalizer.abi,

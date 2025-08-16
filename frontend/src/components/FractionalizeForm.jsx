@@ -1,61 +1,120 @@
 "use client";
-import React, { useState } from "react";
 
-const FractionalizeForm = () => {
+import { useState, useEffect } from "react";
+import { deployFractionalizer } from "../utils/fractionalize";
+
+export default function FractionalizeForm() {
   const [nftAddress, setNftAddress] = useState("");
   const [nftName, setNftName] = useState("");
   const [nftSymbol, setNftSymbol] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [deployedAddresses, setDeployedAddresses] = useState([]);
+  const [recentAddress, setRecentAddress] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Load saved addresses on mount
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("FractionalAddresses")) || [];
+      setDeployedAddresses(Array.isArray(saved) ? saved : []);
+    } catch (e) {
+      console.error("Invalid localStorage data, resetting...");
+      setDeployedAddresses([]);
+    }
+  }, []);
 
-    console.log(nftAddress, nftName, nftSymbol)
-    
+  const handleFractionalize = async () => {
+    if (!nftAddress || !nftName || !nftSymbol) {
+      alert("Details unentered");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const { contractAddress } = await deployFractionalizer(
+        nftAddress,
+        nftName,
+        nftSymbol
+      );
+
+      // Always append to the existing array
+      const updatedAddresses = [...deployedAddresses, contractAddress];
+
+      // Save in localStorage
+      localStorage.setItem(
+        "FractionalAddresses",
+        JSON.stringify(updatedAddresses)
+      );
+
+      // Update state
+      setDeployedAddresses(updatedAddresses);
+      setRecentAddress(contractAddress);
+
+    } catch (error) {
+      console.error("⚠️ Fractionalization failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded shadow-md bg-white max-w-md mx-auto">
-      <div>
-        <label htmlFor="nftAddress" className="block text-sm font-medium text-gray-700">NFT Address</label>
-        <input
-          type="text"
-          id="nftAddress"
-          value={nftAddress}
-          onChange={(e) => setNftAddress(e.target.value)}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="nftName" className="block text-sm font-medium text-gray-700">NFT Name</label>
-        <input
-          type="text"
-          id="nftName"
-          value={nftName}
-          onChange={(e) => setNftName(e.target.value)}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="nftSymbol" className="block text-sm font-medium text-gray-700">NFT Symbol</label>
-        <input
-          type="text"
-          id="nftSymbol"
-          value={nftSymbol}
-          onChange={(e) => setNftSymbol(e.target.value)}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          required
-        />
-      </div>
-      <button
-        type="submit"
-        className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700"
-      >
-        Fractionalize NFT
-      </button>
-    </form>
-  );
-};
+    <div className="p-6 space-y-4 max-w-lg mx-auto">
+      <h2 className="text-xl font-bold">Fractionalize NFT</h2>
 
-export default FractionalizeForm;
+      <input
+        type="text"
+        name="nftAddress"
+        placeholder="NFT Address"
+        value={nftAddress}
+        onChange={(e) => setNftAddress(e.target.value)}
+        className="border p-2 w-full rounded"
+      />
+      <input
+        type="text"
+        name="nftName"
+        placeholder="Token Name"
+        value={nftName}
+        onChange={(e) => setNftName(e.target.value)}
+        className="border p-2 w-full rounded"
+      />
+      <input
+        type="text"
+        name="nftSymbol"
+        placeholder="Token Symbol"
+        value={nftSymbol}
+        onChange={(e) => setNftSymbol(e.target.value)}
+        className="border p-2 w-full rounded"
+      />
+
+      <button
+        onClick={handleFractionalize}
+        disabled={loading}
+        className="bg-indigo-600 text-white p-2 rounded w-full"
+      >
+        {loading ? "Deploying..." : "Fractionalize NFT"}
+      </button>
+
+      {/* Recently deployed contract */}
+      {recentAddress && (
+        <p className="mt-4 text-green-700 font-medium">
+          ✅ Recently Deployed at:{" "}
+          <span className="font-mono">{recentAddress}</span>
+        </p>
+      )}
+
+      {/* All contracts list */}
+      {deployedAddresses.length > 0 && (
+        <div className="mt-6">
+          <h3 className="font-bold text-lg">All Contracts:</h3>
+          <ul className="list-disc pl-6 space-y-1">
+            {deployedAddresses.map((addr, idx) => (
+              <li key={idx} className="font-mono text-sm break-all">
+                {addr}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
