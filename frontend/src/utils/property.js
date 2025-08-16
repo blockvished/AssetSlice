@@ -1,6 +1,6 @@
 import { writeContract, waitForTransactionReceipt, readContract } from '@wagmi/core';
-import PropertyNFT from '../abi/PropertyNFT.json'; // ABI + bytecode
-import { config } from '../wagmi';
+import PropertyNFT from './abi/PropertyNFT.json'; // ABI + bytecode
+import { config } from '../../wagmi';
 
 /**
  * Deploy PropertyNFT contract
