@@ -1,68 +1,121 @@
-"use client"; // only if using Next.js App Router
+"use client";
 
-import { useEffect, useState } from "react";
-import { deployPropertyNFT, getProperty } from "../utils/property";
+import { useState } from "react";
+import { useAccount } from "wagmi";
+import { deployPropertyNFT } from "../utils/property";
 
-export default function PropertyPage() {
-  const [contracts, setContracts] = useState([]);
+export default function DeployPropertyForm() {
+  const { address } = useAccount(); // connected wallet
+  const [form, setForm] = useState({
+    name: "",
+    symbol: "",
+    propertyName: "",
+    typeOf: "",
+    description: "",
+    image: "",
+  });
   const [loading, setLoading] = useState(false);
+  const [deployedAddress, setDeployedAddress] = useState("");
 
-  // Load saved contracts from localStorage on mount
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("property_contracts") || "[]");
-    setContracts(saved);
-  }, []);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  // Save contract address into localStorage
-  function saveContract(address) {
-    const newContracts = [...contracts, { address }];
-    setContracts(newContracts);
-    localStorage.setItem("property_contracts", JSON.stringify(newContracts));
-  }
+  const handleDeploy = async () => {
+    if (!address) {
+      alert("Please connect your wallet first");
+      return;
+    }
 
-  // Deploy a PropertyNFT
-  async function handleDeploy() {
     try {
       setLoading(true);
 
-      // Hardcoded example values — you can later replace with a form
       const { contractAddress } = await deployPropertyNFT(
-        "0xYourWalletAddressHere", // recipient of minted NFT
-        "My Property NFT",
-        "PROP",
-        "Villa Sunset",
-        "House",
-        "Luxury villa with sea view",
-        "ipfs://CID/image.png"
+        address, // `to` = connected wallet
+        form.name,
+        form.symbol,
+        form.propertyName,
+        form.typeOf,
+        form.description,
+        form.image
       );
 
-      saveContract(contractAddress);
-    } catch (err) {
-      console.error(err);
-      alert("Deployment failed");
+      // Store contract address in localStorage
+      localStorage.setItem("propertyNFTAddress", contractAddress);
+
+      setDeployedAddress(contractAddress);
+    } catch (error) {
+      console.log("User rejected transaction — no problem.");
     } finally {
       setLoading(false);
     }
-  }
-
-  // Fetch property metadata from contract
-  async function handleGetProperty(address) {
-    try {
-      const data = await getProperty(address);
-      setContracts((prev) =>
-        prev.map((c) => (c.address === address ? { ...c, metadata: data } : c))
-      );
-    } catch (err) {
-      console.error(err);
-      alert("Failed to fetch property");
-    }
-  }
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>PropertyNFT</h1>
-      <p>Deploy and view PropertyNFT contracts</p>
-      <p>list of nfts</p>
+    <div className="p-6 space-y-4 max-w-lg mx-auto">
+      <h2 className="text-xl font-bold">Deploy Property NFT</h2>
+
+      <input
+        type="text"
+        name="name"
+        placeholder="Collection Name"
+        value={form.name}
+        onChange={handleChange}
+        className="border p-2 w-full rounded"
+      />
+      <input
+        type="text"
+        name="symbol"
+        placeholder="Collection Symbol"
+        value={form.symbol}
+        onChange={handleChange}
+        className="border p-2 w-full rounded"
+      />
+      <input
+        type="text"
+        name="propertyName"
+        placeholder="Property Name"
+        value={form.propertyName}
+        onChange={handleChange}
+        className="border p-2 w-full rounded"
+      />
+      <input
+        type="text"
+        name="typeOf"
+        placeholder="Property Type"
+        value={form.typeOf}
+        onChange={handleChange}
+        className="border p-2 w-full rounded"
+      />
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={form.description}
+        onChange={handleChange}
+        className="border p-2 w-full rounded"
+      />
+      <input
+        type="text"
+        name="image"
+        placeholder="Image URI (ipfs://CID)"
+        value={form.image}
+        onChange={handleChange}
+        className="border p-2 w-full rounded"
+      />
+
+      <button
+        onClick={handleDeploy}
+        disabled={loading}
+        className="bg-blue-600 text-white p-2 rounded w-full"
+      >
+        {loading ? "Deploying..." : "Deploy Contract"}
+      </button>
+
+      {deployedAddress && (
+        <p className="mt-4">
+          ✅ Deployed at: <span className="font-mono">{deployedAddress}</span>
+        </p>
+      )}
     </div>
   );
 }

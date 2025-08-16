@@ -1,4 +1,8 @@
-import { writeContract, waitForTransactionReceipt, readContract } from '@wagmi/core';
+import {
+  deployContract,
+  waitForTransactionReceipt,
+  readContract
+} from "@wagmi/core";
 import PropertyNFT from './abi/PropertyNFT.json'; // ABI + bytecode
 import { config } from '../../wagmi';
 
@@ -22,9 +26,9 @@ export async function deployPropertyNFT(
   description,
   image
 ) {
-  const hash = await writeContract(config, {
+  const hash = await deployContract(config, {
     abi: PropertyNFT.abi,
-    bytecode: PropertyNFT.bytecode,
+    bytecode: PropertyNFT.bytecode.object,
     args: [to, name, symbol, propertyName, typeOf, description, image],
   });
 
