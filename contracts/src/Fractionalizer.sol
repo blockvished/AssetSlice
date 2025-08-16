@@ -8,19 +8,32 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Fractionalizer is ERC20, Ownable {
     IERC721 public propertyNFT;
     uint256 public lockedTokenId;
+    uint256 public totalShares;
     bool public isLocked;
 
-    constructor(address _nft) ERC20("Property Shares", "PSHARE")  Ownable(msg.sender) {
+    constructor(
+        address _nft,
+        string memory _name,
+        string memory _symbol
+    )
+        ERC20(_name, _symbol)
+        Ownable(msg.sender)
+    {
         propertyNFT = IERC721(_nft);
     }
 
-    function fractionalize(uint256 tokenId) external onlyOwner {
+    function fractionalize(uint256 tokenId, uint256 shareCount) external onlyOwner {
         require(!isLocked, "Already fractionalized");
+        require(shareCount > 0, "Share count must be > 0");
+
+        // Transfer the NFT into this contract
         propertyNFT.transferFrom(msg.sender, address(this), tokenId);
+
         lockedTokenId = tokenId;
+        totalShares = shareCount;
         isLocked = true;
 
-        // Mint 1000 shares to owner
-        _mint(msg.sender, 1000 * 1e18);
+        // Mint shares to the owner
+        _mint(msg.sender, shareCount * 1e18);
     }
 }
