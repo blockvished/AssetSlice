@@ -80,13 +80,13 @@ export default function DeployPropertyForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#312e81]">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl">
         
         {/* Left Side - Form & Recent */}
-        <div className="p-8 space-y-6 bg-white shadow-xl rounded-2xl border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 text-center">
-            🏠 Deploy Property NFT
+        <div className="p-8 space-y-6 bg-white/10 backdrop-blur-xl shadow-2xl rounded-2xl border border-white/20">
+          <h2 className="text-3xl font-extrabold text-white text-center">
+            🏠 Deploy Asset NFT
           </h2>
 
           {/* Form */}
@@ -97,7 +97,7 @@ export default function DeployPropertyForm() {
               placeholder="Token Name"
               value={form.name}
               onChange={handleChange}
-              className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
+              className="border border-white/20 bg-white/5 p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-400 text-white placeholder-gray-400"
             />
             <input
               type="text"
@@ -105,7 +105,7 @@ export default function DeployPropertyForm() {
               placeholder="Symbol"
               value={form.symbol}
               onChange={handleChange}
-              className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
+              className="border border-white/20 bg-white/5 p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-400 text-white placeholder-gray-400"
             />
             <input
               type="text"
@@ -113,22 +113,22 @@ export default function DeployPropertyForm() {
               placeholder="Asset Name"
               value={form.propertyName}
               onChange={handleChange}
-              className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
+              className="border border-white/20 bg-white/5 p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-400 text-white placeholder-gray-400"
             />
             <input
               type="text"
               name="typeOf"
-              placeholder="Asset Type"
+              placeholder="Asset Type (House, Car, etc.)"
               value={form.typeOf}
               onChange={handleChange}
-              className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
+              className="border border-white/20 bg-white/5 p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-400 text-white placeholder-gray-400"
             />
             <textarea
               name="description"
               placeholder="Description"
               value={form.description}
               onChange={handleChange}
-              className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
+              className="border border-white/20 bg-white/5 p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-400 text-white placeholder-gray-400"
               rows={3}
             />
             <input
@@ -137,13 +137,13 @@ export default function DeployPropertyForm() {
               placeholder="Image URI (ipfs://CID)"
               value={form.image}
               onChange={handleChange}
-              className="border p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
+              className="border border-white/20 bg-white/5 p-3 w-full rounded-lg focus:ring-2 focus:ring-indigo-400 text-white placeholder-gray-400"
             />
 
             <button
               onClick={handleDeploy}
               disabled={loading}
-              className="bg-indigo-600 text-white p-3 rounded-lg w-full shadow-md hover:bg-indigo-700 transition"
+              className="bg-gradient-to-r from-[#1e3a8a] via-[#312e81] to-[#1e40af] text-white p-3 rounded-lg w-full shadow-lg shadow-indigo-900/40 hover:shadow-indigo-800/60 hover:scale-[1.02] transition-transform font-semibold text-lg"
             >
               {loading ? "🚀 Deploying..." : "Deploy Contract"}
             </button>
@@ -151,11 +151,9 @@ export default function DeployPropertyForm() {
 
           {/* Recently deployed contract */}
           {recentAddress && (
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-800 font-medium">
-                ✅ Recently Deployed at:
-              </p>
-              <p className="font-mono text-sm break-all text-green-700">
+            <div className="p-4 bg-green-900/40 border border-green-500/40 rounded-lg text-green-200">
+              <p className="font-medium">✅ Recently Deployed at:</p>
+              <p className="font-mono text-sm break-all text-green-300">
                 {recentAddress}
               </p>
             </div>
@@ -163,9 +161,9 @@ export default function DeployPropertyForm() {
         </div>
 
         {/* Right Side - All Contracts */}
-        <div className="p-8 bg-white shadow-xl rounded-2xl border border-gray-200">
-          <h3 className="text-xl font-bold mb-4 text-gray-900">
-            📜 All Property Contracts
+        <div className="p-8 bg-white/10 backdrop-blur-xl shadow-2xl rounded-2xl border border-white/20">
+          <h3 className="text-2xl font-bold mb-4 text-white">
+            📜 All Asset Contracts
           </h3>
           {deployedAddresses.length > 0 ? (
             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
@@ -173,16 +171,16 @@ export default function DeployPropertyForm() {
                 <Link
                   key={idx}
                   href={`/asset/${addr}`}
-                  className="block rounded-lg border border-gray-200 bg-gray-50 p-3 shadow-sm hover:shadow-md transition-all duration-200"
+                  className="block rounded-lg border border-white/20 bg-white/5 p-3 shadow-sm hover:shadow-lg transition-all duration-200"
                 >
-                  <p className="font-mono text-sm break-all text-blue-600 hover:text-blue-800">
+                  <p className="font-mono text-sm break-all text-indigo-300 hover:text-indigo-200">
                     {addr}
                   </p>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No contracts deployed yet.</p>
+            <p className="text-gray-300">No contracts deployed yet.</p>
           )}
         </div>
       </div>

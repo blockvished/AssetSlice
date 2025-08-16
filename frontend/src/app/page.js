@@ -1,21 +1,20 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
+import { motion } from "framer-motion";
 
 const HeroIllustration = () => (
-  <img src="/car-home.avif" alt="House, Car, Crypto Illustration" className="w-full max-w-md h-auto" />
+  <img
+    src="/car-home.avif"
+    alt="House, Car, Crypto Illustration"
+    className="w-full max-w-md h-auto drop-shadow-lg"
+  />
 );
 
 export default function Home() {
-  const router = useRouter();
-
-  // Sparkle positions state and effect
   const [sparklePositions, setSparklePositions] = useState([]);
   useEffect(() => {
-    const positions = Array.from({ length: 12 }, () => ({
+    const positions = Array.from({ length: 14 }, () => ({
       top: `${10 + Math.random() * 80}%`,
       left: `${5 + Math.random() * 90}%`,
     }));
@@ -23,45 +22,69 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative flex flex-col md:flex-row items-center justify-center min-h-[85vh] bg-white px-4 md:px-16 overflow-hidden">
-      {/* Dynamic color blobs background */}
-      <div className="absolute -top-40 left-0 w-2/5 h-96 bg-pink-400 rounded-full opacity-30 filter blur-3xl pointer-events-none z-0"></div>
-      <div className="absolute -bottom-56 right-0 w-2/4 h-96 bg-indigo-300 rounded-full opacity-30 filter blur-3xl pointer-events-none z-0"></div>
-      <div className="absolute top-44 left-1/3 w-72 h-72 bg-fuchsia-300 rounded-full opacity-20 filter blur-3xl pointer-events-none z-0"></div>
-      {/* Sparkles/particles overlay */}
+    <div className="relative flex flex-col md:flex-row items-center justify-center min-h-[90vh] px-6 md:px-20 overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#1e3a8a]">
+      {/* Gradient orbs */}
+      <div className="absolute -top-40 left-10 w-96 h-96 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-full opacity-20 blur-3xl z-0"></div>
+      <div className="absolute -bottom-40 right-10 w-[30rem] h-[30rem] bg-gradient-to-r from-blue-700 to-purple-600 rounded-full opacity-20 blur-3xl z-0"></div>
+
+      {/* Sparkles */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="animate-pulse-slow">
-          {sparklePositions.map((pos, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 bg-white opacity-40 rounded-full blur-md"
-              style={pos}
-            />
-          ))}
-        </div>
+        {sparklePositions.map((pos, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-white opacity-40 rounded-full blur-sm"
+            style={pos}
+            animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.7, 0.2] }}
+            transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
+          />
+        ))}
       </div>
-      {/* Left - Text */}
-      <div className="flex-1 flex flex-col justify-center items-start space-y-7 z-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-black">
-          Keep your Asset safe
+
+      {/* Left - Content */}
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex-1 flex flex-col justify-center items-start space-y-6 z-10"
+      >
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">
+          <span className="bg-gradient-to-r from-indigo-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            Fractional Ownership for Any Asset — On-Chain
+          </span>
         </h1>
-        <p className="text-gray-800 text-lg max-w-md">
-          Bring your real world assets onchain by minting them as NFTs for secure, transparent digital ownership.
+        <p className="text-gray-200 text-lg md:text-xl max-w-lg leading-relaxed">
+          Seamlessly fractionalize any NFT-backed asset and distribute rental income or yields directly to token holders
         </p>
         <Link
           href="/asset"
-          className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 px-7 py-3 rounded-lg font-semibold text-lg text-white shadow-lg hover:scale-105 hover:from-pink-600 hover:to-fuchsia-600 transition"
+          className="inline-flex items-center gap-3 bg-gradient-to-r from-[#1e3a8a] via-[#312e81] to-[#1e40af] px-8 py-3 rounded-xl font-semibold text-lg text-white shadow-lg shadow-indigo-900/40 hover:shadow-indigo-800/60 hover:scale-105 transition-transform duration-300"
         >
-          <svg width="22" height="22" fill="none"><rect width="22" height="14" y="4" rx="4" fill="#fff" stroke="#b832fa" strokeWidth="2"/><path d="M7 11h8" stroke="#b832fa" strokeWidth="2" strokeLinecap="round"/></svg>
+          <svg
+            width="22"
+            height="22"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <rect width="22" height="14" y="4" rx="4" />
+            <path d="M7 11h8" />
+          </svg>
           Create Asset
         </Link>
-      </div>
+      </motion.div>
+
       {/* Right - Illustration */}
-      <div className="flex-1 flex items-center justify-center z-10">
-        <div className="p-6 bg-white/80 rounded-2xl shadow-2xl">
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+        className="flex-1 flex items-center justify-center z-10"
+      >
+        <div className="p-6 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/10">
           <HeroIllustration />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

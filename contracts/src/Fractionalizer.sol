@@ -11,6 +11,13 @@ contract Fractionalizer is ERC20, Ownable {
     uint256 public totalShares;
     bool public isLocked;
 
+    IERC20 public stablecoin; // e.g. USDC
+
+    // Yield accounting
+    uint256 public totalDeposited; // cumulative rent deposits
+    mapping(address => uint256) public claimed; // amount each user has claimed
+
+
     constructor(
         address _nft,
         string memory _name,
@@ -51,5 +58,32 @@ contract Fractionalizer is ERC20, Ownable {
         isLocked = false;
         lockedTokenId = 0;
         totalShares = 0;
+    }
+
+    function depositYield(uint256 amount) external onlyOwner {
+        require(isLocked, "No NFT locked");
+        require(
+            stablecoin.transferFrom(msg.sender, address(this), amount),
+            "Deposit failed"
+        );
+        totalDeposited += amount;
+    }
+
+    /// @notice Claim pending yield for msg.sender
+    function claimYield() external {
+        uint256 entitled = (balanceOf(msg.sender) * totalDeposited) /
+            totalSupply();
+        uint256 alreadyClaimed = claimed[msg.sender];
+        uint256 payout = entitled - alreadyClaimed;
+        require(payout > 0, "Nothing to claim");
+
+        claimed[msg.sender] = entitled;
+        require(stablecoin.transfer(msg.sender, payout), "Transfer failed");
+    }
+
+    /// @notice View how much yield a user can claim
+    function pendingYield(address user) external view returns (uint256) {
+        uint256 entitled = (balanceOf(user) * totalDeposited) / totalSupply();
+        return entitled - claimed[user];
     }
 }
