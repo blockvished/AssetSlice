@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
 
 export default function Navbar() {
   return (
@@ -8,14 +9,31 @@ export default function Navbar() {
       {/* Left side: Logo */}
       <div className="flex items-center gap-3">
         <img src="/globe.svg" alt="Logo" className="h-8 w-8" />
-        <span className="text-2xl font-extrabold text-white tracking-wide drop-shadow">My App</span>
+        <span className="text-2xl font-extrabold text-white tracking-wide drop-shadow">
+          My App
+        </span>
       </div>
 
       {/* Center: Navigation Links */}
       <div className="flex gap-8">
-        <a href="/" className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200">Home</a>
-        <a href="/fractionalize" className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200">Fractionalize</a>
-        <a href="/about" className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200">About</a>
+        <Link
+          href="/"
+          className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200"
+        >
+          Home
+        </Link>
+        <Link
+          href="/fractionalize"
+          className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200"
+        >
+          Fractionalize
+        </Link>
+        <Link
+          href="/about"
+          className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200"
+        >
+          About
+        </Link>
       </div>
 
       {/* Right side: Connect Button */}
