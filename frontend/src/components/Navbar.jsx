@@ -23,6 +23,12 @@ export default function Navbar() {
           Home
         </Link>
         <Link
+          href="/asset"
+          className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200"
+        >
+          Assets
+        </Link>
+        <Link
           href="/fractionalize"
           className="text-lg font-semibold text-white hover:text-yellow-300 transition-colors duration-200"
         >

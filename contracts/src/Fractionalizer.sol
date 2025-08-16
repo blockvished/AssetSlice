@@ -15,14 +15,14 @@ contract Fractionalizer is ERC20, Ownable {
         address _nft,
         string memory _name,
         string memory _symbol
-    )
-        ERC20(_name, _symbol)
-        Ownable(msg.sender)
-    {
+    ) ERC20(_name, _symbol) Ownable(msg.sender) {
         propertyNFT = IERC721(_nft);
     }
 
-    function fractionalize(uint256 tokenId, uint256 shareCount) external onlyOwner {
+    function fractionalize(
+        uint256 tokenId,
+        uint256 shareCount
+    ) external onlyOwner {
         require(!isLocked, "Already fractionalized");
         require(shareCount > 0, "Share count must be > 0");
 
@@ -34,7 +34,7 @@ contract Fractionalizer is ERC20, Ownable {
         isLocked = true;
 
         // Mint shares to the owner
-        _mint(msg.sender, shareCount * 1e18);
+        _mint(msg.sender, shareCount * 10 ** decimals());
     }
 
     function unfractionalize(address to) external {
