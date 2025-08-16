@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link"; // ✅ Import Link
 import { getTokenURI, getERC721Name, getERC721Symbol } from "../../../utils/property";
 
 export default function FractionalizeDetailPage() {
-  const params = useParams();
   const pathname = usePathname();
   const [address, setAddress] = useState(null);
   const [property, setProperty] = useState(null);
@@ -14,13 +13,9 @@ export default function FractionalizeDetailPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (params?.address) {
-      setAddress(params.address);
-    } else if (pathname) {
       const pathParts = pathname.split("/");
       setAddress(pathParts[pathParts.length - 1]);
-    }
-  }, [params, pathname]);
+  }, [pathname]);
 
   useEffect(() => {
     if (!address) return;
@@ -28,7 +23,8 @@ export default function FractionalizeDetailPage() {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-
+        console.log(address)
+        
         const uri = await getTokenURI(address, 1);
         const tokenName = await getERC721Name(address);
         const symbol = await getERC721Symbol(address, 1);

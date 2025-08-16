@@ -184,62 +184,58 @@ export default function FractionalizedNFTDetailPage() {
             <div className="p-4 border rounded-lg bg-gray-50">
               <p className="text-gray-500 text-sm mb-1">Locked?</p>
               <p
-                className={`font-semibold ${
-                  fractionalData.isLocked ? "text-red-600" : "text-green-600"
-                }`}
+                className={`font-semibold ${fractionalData.isLocked ? "text-red-600" : "text-green-600"
+                  }`}
               >
                 {fractionalData.isLocked ? "Yes 🔒" : "No 🔓"}
               </p>
             </div>
 
             {/* Forms */}
-            {fractionalData.isLocked ? (
-              <div className="p-4 border rounded-lg bg-gray-50">
-                <h3 className="font-semibold text-lg mb-2">Unfractionalize</h3>
-                <input
-                  type="text"
-                  placeholder="Recipient address"
-                  value={toAddress}
-                  onChange={(e) => setToAddress(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 mb-2"
-                />
-                <button
-                  onClick={handleUnfractionalize}
-                  className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
-                >
-                  🔓 Unfractionalize
-                </button>
-              </div>
-            ) : (
-              <div className="p-4 border rounded-lg bg-gray-50">
-                <h3 className="font-semibold text-lg mb-2">Fractionalize</h3>
+            {fractionalData && (
+              <div className="mt-6 space-y-6">
+                {/* Details grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <p className="text-gray-500 text-sm">Token Name</p>
+                    <p className="font-semibold text-gray-900">{fractionalData.name}</p>
+                  </div>
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <p className="text-gray-500 text-sm">Symbol</p>
+                    <p className="font-semibold text-gray-900">{fractionalData.symbol}</p>
+                  </div>
+                </div>
 
-                {/* No tokenId input → always using 1 */}
+                {/* Total Supply */}
+                <div className="p-4 border rounded-lg bg-gray-50">
+                  <p className="text-gray-500 text-sm mb-1">Total Shares</p>
+                  <p className="font-semibold text-gray-900">
+                    {Number(fractionalData.totalShares) / 1e18}
+                  </p>
+                </div>
 
-                {!isApproved ? (
+                {/* CTA */}
+                <div className="p-4 border rounded-lg bg-gray-50 space-y-3">
+                  <label className="block text-gray-500 text-sm mb-1">Receiver Address</label>
+                  <input
+                    type="text"
+                    value={toAddress}
+                    onChange={(e) => setToAddress(e.target.value)}
+                    placeholder="0xReceiver..."
+                    className="w-full p-2 border rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  />
                   <button
-                    onClick={handleApprove}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                    onClick={handleUnfractionalize}
+                    disabled={!toAddress}
+                    className={`w-full px-6 py-3 rounded-lg font-semibold shadow transition 
+      ${toAddress
+                        ? "bg-red-600 text-white hover:bg-red-700"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
                   >
-                    ✅ Approve NFT (Token ID = 1)
+                    🔓 Unfractionalize
                   </button>
-                ) : (
-                  <>
-                    <input
-                      type="text"
-                      placeholder="Share Count"
-                      value={shareCount}
-                      onChange={(e) => setShareCount(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2 mb-2"
-                    />
-                    <button
-                      onClick={handleFractionalize}
-                      className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
-                    >
-                      🔗 Fractionalize (Token ID = 1)
-                    </button>
-                  </>
-                )}
+                </div>
               </div>
             )}
 

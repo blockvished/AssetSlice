@@ -73,7 +73,7 @@ export default function DeployPropertyForm() {
       setDeployedAddresses(updatedAddresses);
       setRecentAddress(contractAddress);
     } catch (error) {
-      console.error("⚠️ Deployment failed:", error);
+      console.log("⚠️ Deployment failed:", error);
     } finally {
       setLoading(false);
     }

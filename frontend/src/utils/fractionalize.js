@@ -124,9 +124,9 @@ export async function isApprovedForFractionalizer(
   fractionalizerAddress,
   tokenId
 ) {
-  const approved = await readContract({
+  const approved = await readContract(config, {
     address: nftAddress,
-    abi: ERC721ABI,
+    abi: PropertyNFT.abi,
     functionName: "getApproved",
     args: [tokenId],
   });
