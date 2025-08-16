@@ -62,3 +62,19 @@ export async function getTokenURI(contractAddress, tokenId) {
     args: [tokenId],
   });
 }
+
+export async function getERC721Name(contractAddress) {
+  return await readContract(config, {
+    address: contractAddress,
+    abi: PropertyNFT.abi,
+    functionName: "name",
+  });
+}
+
+export async function getERC721Symbol(contractAddress) {
+  return await readContract(config, {
+    address: contractAddress,
+    abi: PropertyNFT.abi,
+    functionName: "symbol",
+  });
+}

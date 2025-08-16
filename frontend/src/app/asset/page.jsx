@@ -87,7 +87,7 @@ export default function DeployPropertyForm() {
       <input
         type="text"
         name="name"
-        placeholder="Collection Name"
+        placeholder="Token Name"
         value={form.name}
         onChange={handleChange}
         className="border p-2 w-full rounded"
@@ -95,7 +95,7 @@ export default function DeployPropertyForm() {
       <input
         type="text"
         name="symbol"
-        placeholder="Collection Symbol"
+        placeholder="Symbol"
         value={form.symbol}
         onChange={handleChange}
         className="border p-2 w-full rounded"
@@ -103,7 +103,7 @@ export default function DeployPropertyForm() {
       <input
         type="text"
         name="propertyName"
-        placeholder="Property Name"
+        placeholder="Asset Name"
         value={form.propertyName}
         onChange={handleChange}
         className="border p-2 w-full rounded"
@@ -111,7 +111,7 @@ export default function DeployPropertyForm() {
       <input
         type="text"
         name="typeOf"
-        placeholder="Property Type"
+        placeholder="Asset Type"
         value={form.typeOf}
         onChange={handleChange}
         className="border p-2 w-full rounded"
