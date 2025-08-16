@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { deployPropertyNFT } from "../utils/property";
 
@@ -15,7 +15,20 @@ export default function DeployPropertyForm() {
     image: "",
   });
   const [loading, setLoading] = useState(false);
-  const [deployedAddress, setDeployedAddress] = useState("");
+  const [deployedAddresses, setDeployedAddresses] = useState([]);
+  const [recentAddress, setRecentAddress] = useState("");
+
+  // Load saved addresses on mount
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("propertyNFTAddresses")) || [];
+      setDeployedAddresses(Array.isArray(saved) ? saved : []);
+    } catch (e) {
+      console.error("Invalid localStorage data, resetting...");
+      setDeployedAddresses([]);
+    }
+  }, []);
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,7 +44,7 @@ export default function DeployPropertyForm() {
       setLoading(true);
 
       const { contractAddress } = await deployPropertyNFT(
-        address, // `to` = connected wallet
+        address,
         form.name,
         form.symbol,
         form.propertyName,
@@ -40,16 +53,26 @@ export default function DeployPropertyForm() {
         form.image
       );
 
-      // Store contract address in localStorage
-      localStorage.setItem("propertyNFTAddress", contractAddress);
+      // Always append to the existing array
+      const updatedAddresses = [...deployedAddresses, contractAddress];
 
-      setDeployedAddress(contractAddress);
+      // Save in localStorage
+      localStorage.setItem(
+        "propertyNFTAddresses",
+        JSON.stringify(updatedAddresses)
+      );
+
+      // Update state
+      setDeployedAddresses(updatedAddresses);
+      setRecentAddress(contractAddress);
+
     } catch (error) {
       console.log("User rejected transaction — no problem.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="p-6 space-y-4 max-w-lg mx-auto">
@@ -111,10 +134,26 @@ export default function DeployPropertyForm() {
         {loading ? "Deploying..." : "Deploy Contract"}
       </button>
 
-      {deployedAddress && (
-        <p className="mt-4">
-          ✅ Deployed at: <span className="font-mono">{deployedAddress}</span>
+      {/* Recently deployed contract */}
+      {recentAddress && (
+        <p className="mt-4 text-green-700 font-medium">
+          ✅ Recently Deployed at:{" "}
+          <span className="font-mono">{recentAddress}</span>
         </p>
+      )}
+
+      {/* All contracts list */}
+      {deployedAddresses.length > 0 && (
+        <div className="mt-6">
+          <h3 className="font-bold text-lg">All Deployed Contracts:</h3>
+          <ul className="list-disc pl-6 space-y-1">
+            {deployedAddresses.map((addr, idx) => (
+              <li key={idx} className="font-mono text-sm break-all">
+                {addr}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

@@ -1,16 +1,16 @@
 "use client";
 import React, { useState } from "react";
 
-const FractionalizeForm = ({ onSubmit }) => {
+const FractionalizeForm = () => {
   const [nftAddress, setNftAddress] = useState("");
   const [nftName, setNftName] = useState("");
   const [nftSymbol, setNftSymbol] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit({ nftAddress, nftName, nftSymbol });
-    }
+
+    console.log(nftAddress, nftName, nftSymbol)
+    
   };
 
   return (
