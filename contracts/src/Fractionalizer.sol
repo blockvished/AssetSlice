@@ -36,4 +36,20 @@ contract Fractionalizer is ERC20, Ownable {
         // Mint shares to the owner
         _mint(msg.sender, shareCount * 1e18);
     }
+
+        function unfractionalize(address to) external {
+        require(isLocked, "No NFT locked");
+        require(balanceOf(msg.sender) == totalSupply(), "Must own all shares");
+
+        // Burn all shares
+        _burn(msg.sender, totalSupply());
+
+        // Unlock NFT
+        propertyNFT.transferFrom(address(this), to, lockedTokenId);
+
+        // Reset state
+        isLocked = false;
+        lockedTokenId = 0;
+        totalShares = 0;
+    }
 }
