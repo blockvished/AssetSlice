@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { deployPropertyNFT } from "../../utils/property";
+import Link from "next/link";
 
 export default function DeployPropertyForm() {
   const { address } = useAccount(); // connected wallet
@@ -150,14 +151,21 @@ export default function DeployPropertyForm() {
       {/* All contracts list */}
       {deployedAddresses.length > 0 && (
         <div className="mt-6">
-          <h3 className="font-bold text-lg">All Deployed Contracts:</h3>
-          <ul className="list-disc pl-6 space-y-1">
+          <h3 className="font-bold text-lg mb-3">All Contracts</h3>
+          <div className="grid gap-3">
             {deployedAddresses.map((addr, idx) => (
-              <li key={idx} className="font-mono text-sm break-all">
-                {addr}
-              </li>
+              <Link
+                key={idx}
+                href={`/asset/${addr}`}
+                className="block rounded-lg border border-gray-200 bg-white p-3 shadow-sm 
+                     hover:shadow-md transition-all duration-200"
+              >
+                <p className="font-mono text-sm break-all text-blue-600 hover:text-blue-800">
+                  {addr}
+                </p>
+              </Link>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>

@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/app/asset/page.jsx", "src/app/fractionalize/[address]/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]
