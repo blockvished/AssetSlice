@@ -36,7 +36,12 @@ export default function DeployPropertyForm() {
 
   const handleDeploy = async () => {
     if (!address) {
-      alert("Please connect your wallet first");
+      alert("Wallet not connected");
+      return;
+    }
+
+    if (!form.name || !form.symbol || !form.propertyName || !form.typeOf || !form.description || !form.image) {
+      alert("Details unentered");
       return;
     }
 
