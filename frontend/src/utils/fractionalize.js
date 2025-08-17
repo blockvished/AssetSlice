@@ -175,12 +175,3 @@ export async function getClaimed(contractAddress, user) {
     args: [user],
   })
 }
-
-// Get total deposited yield (by the owner)
-export async function getTotalDeposited(contractAddress) {
-  return await readContract(config, {
-    address: contractAddress,
-    abi: Fractionalizer.abi,
-    functionName: 'totalDeposited',
-  })
-}
