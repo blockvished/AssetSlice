@@ -22,12 +22,12 @@ export default function FractionalizedNFTDetailPage() {
   const [fractionalData, setFractionalData] = useState(null);
 
   // form inputs
-  const [tokenId] = useState("1"); // ✅ fixed to 1
+  const [tokenId, setTokenId] = useState("");
   const [shareCount, setShareCount] = useState("");
   const [toAddress, setToAddress] = useState("");
 
   const [txStatus, setTxStatus] = useState("");
-  const [isApproved, setIsApproved] = useState(false);
+  const [isApproved, setIsApproved] = useState(true); // assume true until checked
 
   useEffect(() => {
     if (!address) return;
@@ -63,10 +63,10 @@ export default function FractionalizedNFTDetailPage() {
     fetchFractionalData();
   }, [address]);
 
-  // ✅ Check approval whenever propertyNFT changes
+  // Check approval whenever propertyNFT or tokenId changes
   useEffect(() => {
     const check = async () => {
-      if (!fractionalData?.propertyNFT) return;
+      if (!fractionalData?.propertyNFT || !tokenId) return;
       try {
         const approved = await isApprovedForFractionalizer(
           fractionalData.propertyNFT,
@@ -76,7 +76,6 @@ export default function FractionalizedNFTDetailPage() {
         setIsApproved(approved);
       } catch (err) {
         console.error("Approval check failed:", err);
-        setIsApproved(false);
       }
     };
     check();
@@ -84,7 +83,7 @@ export default function FractionalizedNFTDetailPage() {
 
   const handleFractionalize = async () => {
     try {
-      if (!fractionalData?.propertyNFT || !shareCount) return;
+      if (!fractionalData?.propertyNFT || !tokenId || !shareCount) return;
 
       if (!isApproved) {
         setTxStatus("❌ NFT not approved for fractionalizer contract.");
@@ -115,7 +114,7 @@ export default function FractionalizedNFTDetailPage() {
 
   const handleApprove = async () => {
     try {
-      if (!fractionalData?.propertyNFT) return;
+      if (!fractionalData?.propertyNFT || !tokenId) return;
       setTxStatus("Sending approve tx...");
       const tx = await approveNFT(fractionalData.propertyNFT, address, tokenId);
       setTxStatus("✅ Approved! Tx: " + tx.hash);
@@ -184,58 +183,65 @@ export default function FractionalizedNFTDetailPage() {
             <div className="p-4 border rounded-lg bg-gray-50">
               <p className="text-gray-500 text-sm mb-1">Locked?</p>
               <p
-                className={`font-semibold ${fractionalData.isLocked ? "text-red-600" : "text-green-600"
-                  }`}
+                className={`font-semibold ${
+                  fractionalData.isLocked ? "text-red-600" : "text-green-600"
+                }`}
               >
                 {fractionalData.isLocked ? "Yes 🔒" : "No 🔓"}
               </p>
             </div>
 
             {/* Forms */}
-            {fractionalData && (
-              <div className="mt-6 space-y-6">
-                {/* Details grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 border rounded-lg bg-gray-50">
-                    <p className="text-gray-500 text-sm">Token Name</p>
-                    <p className="font-semibold text-gray-900">{fractionalData.name}</p>
-                  </div>
-                  <div className="p-4 border rounded-lg bg-gray-50">
-                    <p className="text-gray-500 text-sm">Symbol</p>
-                    <p className="font-semibold text-gray-900">{fractionalData.symbol}</p>
-                  </div>
-                </div>
+            {fractionalData.isLocked ? (
+              <div className="p-4 border rounded-lg bg-gray-50">
+                <h3 className="font-semibold text-lg mb-2">Unfractionalize</h3>
+                <input
+                  type="text"
+                  placeholder="Recipient address"
+                  value={toAddress}
+                  onChange={(e) => setToAddress(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2 mb-2"
+                />
+                <button
+                  onClick={handleUnfractionalize}
+                  className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
+                >
+                  🔓 Unfractionalize
+                </button>
+              </div>
+            ) : (
+              <div className="p-4 border rounded-lg bg-gray-50">
+                <h3 className="font-semibold text-lg mb-2 text-gray-500">Fractionalize</h3>
+                <input
+                  type="text"
+                  placeholder="Token ID"
+                  value={tokenId}
+                  onChange={(e) => setTokenId(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Share Count"
+                  value={shareCount}
+                  onChange={(e) => setShareCount(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-400"
+                />
 
-                {/* Total Supply */}
-                <div className="p-4 border rounded-lg bg-gray-50">
-                  <p className="text-gray-500 text-sm mb-1">Total Shares</p>
-                  <p className="font-semibold text-gray-900">
-                    {Number(fractionalData.totalShares) / 1e18}
-                  </p>
-                </div>
-
-                {/* CTA */}
-                <div className="p-4 border rounded-lg bg-gray-50 space-y-3">
-                  <label className="block text-gray-500 text-sm mb-1">Receiver Address</label>
-                  <input
-                    type="text"
-                    value={toAddress}
-                    onChange={(e) => setToAddress(e.target.value)}
-                    placeholder="0xReceiver..."
-                    className="w-full p-2 border rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500"
-                  />
+                {!isApproved ? (
                   <button
-                    onClick={handleUnfractionalize}
-                    disabled={!toAddress}
-                    className={`w-full px-6 py-3 rounded-lg font-semibold shadow transition 
-      ${toAddress
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
+                    onClick={handleApprove}
+                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
                   >
-                    🔓 Unfractionalize
+                    ✅ Approve NFT
                   </button>
-                </div>
+                ) : (
+                  <button
+                    onClick={handleFractionalize}
+                    className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+                  >
+                    🔗 Fractionalize
+                  </button>
+                )}
               </div>
             )}
 
