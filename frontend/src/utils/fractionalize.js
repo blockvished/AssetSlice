@@ -133,3 +133,54 @@ export async function isApprovedForFractionalizer(
 
   return approved.toLowerCase() === fractionalizerAddress.toLowerCase();
 }
+
+// newly added functions
+
+// Get pending yield for a user
+export async function getPendingYield(contractAddress, user) {
+  return await readContract(config, {
+    address: contractAddress,
+    abi: Fractionalizer.abi,
+    functionName: 'pendingYield',
+    args: [user],
+  })
+}
+
+// Get claimed yield by a user
+export async function getClaimedYield(contractAddress, user) {
+  return await readContract(config, {
+    address: contractAddress,
+    abi: Fractionalizer.abi,
+    functionName: 'claimed',
+    args: [user],
+  })
+}
+
+// Get total deposited yield
+export async function getTotalDeposited(contractAddress) {
+  return await readContract(config, {
+    address: contractAddress,
+    abi: Fractionalizer.abi,
+    functionName: 'totalDeposited',
+  })
+}
+
+
+// Get claimed yield by a user
+export async function getClaimed(contractAddress, user) {
+  return await readContract(config, {
+    address: contractAddress,
+    abi: Fractionalizer.abi,
+    functionName: 'claimed',
+    args: [user],
+  })
+}
+
+// Get total deposited yield (by the owner)
+export async function getTotalDeposited(contractAddress) {
+  return await readContract(config, {
+    address: contractAddress,
+    abi: Fractionalizer.abi,
+    functionName: 'totalDeposited',
+  })
+}
