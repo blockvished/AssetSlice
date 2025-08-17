@@ -29,70 +29,60 @@ export default function FractionalizedNFTDetailPage() {
   const [txStatus, setTxStatus] = useState("");
   const [isApproved, setIsApproved] = useState(true); // assume true until checked
 
+  // fetch fresh contract state + approval
+  const refreshData = async () => {
+    try {
+      const [name, symbol, totalShares, propertyNFT, isLocked] =
+        await Promise.all([
+          getERC20Name(address),
+          getERC20Symbol(address),
+          getTotalShares(address),
+          getPropertyNFT(address),
+          getIsLocked(address),
+        ]);
+
+      setFractionalData({ name, symbol, totalShares, propertyNFT, isLocked });
+
+      if (propertyNFT && tokenId) {
+        const approved = await isApprovedForFractionalizer(
+          propertyNFT,
+          address,
+          tokenId
+        );
+        setIsApproved(approved);
+      }
+    } catch (err) {
+      console.log("Refresh failed:", err);
+    }
+  };
+
+  // initial fetch
   useEffect(() => {
     if (!address) return;
-
-    const fetchFractionalData = async () => {
+    const init = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-
-        const [name, symbol, totalShares, propertyNFT, isLocked] =
-          await Promise.all([
-            getERC20Name(address),
-            getERC20Symbol(address),
-            getTotalShares(address),
-            getPropertyNFT(address),
-            getIsLocked(address),
-          ]);
-
-        setFractionalData({
-          name,
-          symbol,
-          totalShares,
-          propertyNFT,
-          isLocked,
-        });
+        await refreshData();
       } catch (err) {
-        console.error("Error fetching fractionalized NFT:", err);
+        console.log("Error fetching fractionalized NFT:", err);
         setError("⚠️ Failed to fetch fractionalized NFT details.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchFractionalData();
+    init();
   }, [address]);
-
-  // Check approval whenever propertyNFT or tokenId changes
-  useEffect(() => {
-    const check = async () => {
-      if (!fractionalData?.propertyNFT || !tokenId) return;
-      try {
-        const approved = await isApprovedForFractionalizer(
-          fractionalData.propertyNFT,
-          address,
-          tokenId
-        );
-        setIsApproved(approved);
-      } catch (err) {
-        console.error("Approval check failed:", err);
-      }
-    };
-    check();
-  }, [fractionalData?.propertyNFT, tokenId, address]);
 
   const handleFractionalize = async () => {
     try {
-      if (!fractionalData?.propertyNFT || !tokenId || !shareCount) return;
-
       if (!isApproved) {
         setTxStatus("❌ NFT not approved for fractionalizer contract.");
         return;
       }
-
-      setTxStatus("Sending fractionalize tx...");
-      const tx = await fractionalize(address, tokenId, shareCount);
-      setTxStatus("✅ Fractionalized! Tx: " + tx.hash);
+      setTxStatus("⏳ Sending fractionalize tx...");
+      await fractionalize(address, tokenId, shareCount);
+      setTxStatus("✅ Fractionalized successfully!");
+      await refreshData();
     } catch (err) {
       console.error("Fractionalize failed:", err);
       setTxStatus("❌ Transaction failed");
@@ -101,11 +91,10 @@ export default function FractionalizedNFTDetailPage() {
 
   const handleUnfractionalize = async () => {
     try {
-      if (!toAddress) return;
-
-      setTxStatus("Sending unfractionalize tx...");
-      const tx = await unfractionalize(address, toAddress);
-      setTxStatus("✅ Unfractionalized! Tx: " + tx.hash);
+      setTxStatus("⏳ Sending unfractionalize tx...");
+      await unfractionalize(address, toAddress);
+      setTxStatus("✅ Unfractionalized successfully!");
+      await refreshData();
     } catch (err) {
       console.error("Unfractionalize failed:", err);
       setTxStatus("❌ Transaction failed");
@@ -114,11 +103,10 @@ export default function FractionalizedNFTDetailPage() {
 
   const handleApprove = async () => {
     try {
-      if (!fractionalData?.propertyNFT || !tokenId) return;
-      setTxStatus("Sending approve tx...");
-      const tx = await approveNFT(fractionalData.propertyNFT, address, tokenId);
-      setTxStatus("✅ Approved! Tx: " + tx.hash);
-      setIsApproved(true);
+      setTxStatus("⏳ Sending approve tx...");
+      await approveNFT(fractionalData.propertyNFT, address, tokenId);
+      setTxStatus("✅ Approved successfully!");
+      await refreshData();
     } catch (err) {
       console.error("Approval failed:", err);
       setTxStatus("❌ Approval failed");
@@ -193,38 +181,44 @@ export default function FractionalizedNFTDetailPage() {
 
             {/* Forms */}
             {fractionalData.isLocked ? (
+              // Locked → show Unfractionalize
               <div className="p-4 border rounded-lg bg-gray-50">
-                <h3 className="font-semibold text-lg mb-2 text-gray-400">Unfractionalize</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-500">
+                  Unfractionalize
+                </h3>
                 <input
                   type="text"
                   placeholder="Recipient address"
                   value={toAddress}
                   onChange={(e) => setToAddress(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-400"
+                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-700"
                 />
                 <button
                   onClick={handleUnfractionalize}
-                  className="w-full bg-red-600 py-2 rounded-lg hover:bg-red-700 text-gray-600"
+                  className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
                 >
                   🔓 Unfractionalize
                 </button>
               </div>
             ) : (
+              // Not locked → show Approve or Fractionalize
               <div className="p-4 border rounded-lg bg-gray-50">
-                <h3 className="font-semibold text-lg mb-2 text-gray-500">Fractionalize</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-500">
+                  Fractionalize
+                </h3>
                 <input
                   type="text"
                   placeholder="Token ID"
                   value={tokenId}
                   onChange={(e) => setTokenId(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-400"
+                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-700"
                 />
                 <input
                   type="text"
                   placeholder="Share Count"
                   value={shareCount}
                   onChange={(e) => setShareCount(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-400"
+                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-700"
                 />
 
                 {!isApproved ? (

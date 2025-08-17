@@ -31,34 +31,44 @@ export async function deployFractionalizer(nftAddress, name, symbol) {
 
 }
 
-// approve on nft for transferFrom
+/* Approve NFT for transferFrom */
 export async function approveNFT(contractAddress, to, tokenId) {
-  return await writeContract(config, {
+  const txHash = await writeContract(config, {
     address: contractAddress,
     abi: PropertyNFT.abi,
     functionName: 'approve',
     args: [to, tokenId],
   });
+
+  // wait until mined
+  const receipt = await waitForTransactionReceipt(config, { hash: txHash });
+  return receipt;
 }
 
 /* Call fractionalize() on deployed contract */
 export async function fractionalize(contractAddress, tokenId, shareCount) {
-  return await writeContract(config, {
+  const txHash = await writeContract(config, {
     address: contractAddress,
     abi: Fractionalizer.abi,
     functionName: 'fractionalize',
-    args: [tokenId, shareCount], // both args are required
+    args: [tokenId, shareCount],
   });
+
+  const receipt = await waitForTransactionReceipt(config, { hash: txHash });
+  return receipt;
 }
 
 /* Call unfractionalize(to) */
 export async function unfractionalize(contractAddress, to) {
-  return await writeContract(config, {
+  const txHash = await writeContract(config, {
     address: contractAddress,
     abi: Fractionalizer.abi,
     functionName: 'unfractionalize',
     args: [to],
   });
+
+  const receipt = await waitForTransactionReceipt(config, { hash: txHash });
+  return receipt;
 }
 
 /* Read total shares */
