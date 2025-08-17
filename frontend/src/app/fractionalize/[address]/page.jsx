@@ -22,7 +22,7 @@ export default function FractionalizedNFTDetailPage() {
   const [fractionalData, setFractionalData] = useState(null);
 
   // form inputs
-  const [tokenId, setTokenId] = useState("");
+  const [tokenId, setTokenId] = useState(1);
   const [shareCount, setShareCount] = useState("");
   const [toAddress, setToAddress] = useState("");
 
@@ -169,7 +169,7 @@ export default function FractionalizedNFTDetailPage() {
             <div className="p-4 border rounded-lg bg-gray-50">
               <p className="text-gray-500 text-sm mb-1">Total Shares</p>
               <p className="text-gray-800 leading-relaxed">
-                {Number(fractionalData.totalShares) / 1e18}
+                {Number(fractionalData.totalShares)}
               </p>
             </div>
 
@@ -194,17 +194,17 @@ export default function FractionalizedNFTDetailPage() {
             {/* Forms */}
             {fractionalData.isLocked ? (
               <div className="p-4 border rounded-lg bg-gray-50">
-                <h3 className="font-semibold text-lg mb-2">Unfractionalize</h3>
+                <h3 className="font-semibold text-lg mb-2 text-gray-400">Unfractionalize</h3>
                 <input
                   type="text"
                   placeholder="Recipient address"
                   value={toAddress}
                   onChange={(e) => setToAddress(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 mb-2"
+                  className="w-full border rounded-lg px-3 py-2 mb-2 text-gray-400"
                 />
                 <button
                   onClick={handleUnfractionalize}
-                  className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
+                  className="w-full bg-red-600 py-2 rounded-lg hover:bg-red-700 text-gray-600"
                 >
                   🔓 Unfractionalize
                 </button>
