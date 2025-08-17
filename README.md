@@ -22,34 +22,26 @@
 
 ## ⚙️ Technical Architecture
 
-1. **NFT Layer (ERC721)**  
+1. **RWA NFT ERC721**  
    - Each property or asset is minted as a unique NFT.  
    - Metadata (name, description, image) is stored on IPFS.  
 
-2. **Fractionalization Layer (ERC20)**  
+2. **Fractals of NFT (ERC20) and Yield**  
    - NFT locked inside the **Fractionalizer contract**.  
    - Asset owner chooses how many shares to mint (e.g., 500, 1,000, 10,000).  
    - ERC20 tokens are minted to represent **fractional ownership**
-
-3. **Yield Layer**  
    - Asset owner deposits rental income (mock stablecoin).  
    - Shareholders claim their proportional share of yield.  
-
+   
    **Formula:**  
 ```
 entitled = (yourShares / totalShares) * totalDeposited
 payout = entitled - alreadyClaimed
 ```
 
-
-4. **Marketplace Layer (Demo)**  
+3. **Marketplace Layer (Demo)**  
 - Users can buy/sell shares at a **fixed price** (1 USDC = 1 share).  
 - Simple, intuitive mechanism for hackathon demonstration.  
-
-5. **Frontend (Next.js + Wagmi)**  
-- Displays property NFT, ownership breakdown, and user’s shares.  
-- Buttons: **Buy Shares, Sell Shares, Claim Yield**.  
-- Easy to interact with live on testnet.  
 
 ---
 
